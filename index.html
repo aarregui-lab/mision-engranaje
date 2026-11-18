@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Operación Engranaje · Misión Mates 6º</title>
+<style>
+:root{--bg:#0d1326;--panel:#16203d;--ink:#eef2ff;--acc:#ffc94a;--ok:#5fe0a0;--bad:#ff7a7a;--mut:#9fb0d8;--fs:17px;--font:"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);font-size:var(--fs);color:var(--ink);background:radial-gradient(ellipse at top,#26305e,var(--bg) 70%);min-height:100vh;line-height:1.5}
+body.dys{--font:"Comic Sans MS","OpenDyslexic",Verdana,sans-serif;letter-spacing:.04em;word-spacing:.12em}
+body.big{--fs:22px}body.hc{--bg:#000;--panel:#000;--ink:#fff;--acc:#ff0;--mut:#fff;background:#000}body.hc .card,body.hc .doc{border:3px solid #fff}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 14px;background:rgba(0,0,0,.35);position:sticky;top:0;z-index:5}
+header .t{font-weight:700;color:var(--acc);margin-right:auto}button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:8px 14px;background:#2d3b6e;color:var(--ink)}
+button:hover,button:focus{outline:3px solid var(--acc)}button.main{background:var(--acc);color:#1a1300;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}.card{background:var(--panel);border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.doc{background:#f6efd9;color:#2a2112;border-radius:8px;padding:16px;font-family:Georgia,serif;border-left:8px solid #b48a3c}body.hc .doc{background:#000;color:#fff}
+.doc h4{margin:0 0 6px}.mail{font-family:monospace;background:#e8eef9;color:#123;border-left-color:#4a6fb4}.web{background:#fff;color:#123;border-left-color:#2a9d8f}.db{font-family:monospace;background:#102018;color:#9fffc0;border-left-color:#5fe0a0}
+input,select{font:inherit;padding:10px;border-radius:10px;border:2px solid var(--mut);background:#0b1020;color:var(--ink);width:100%;max-width:420px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.msg{min-height:1.5em;font-weight:700}.okm{color:var(--ok)}.badm{color:var(--bad)}
+.hint{background:#2a2550;border-radius:10px;padding:10px;margin:6px 0}.prog{display:flex;gap:6px}.prog span{flex:1;padding:4px;text-align:center;border-radius:8px;background:#2d3b6e;font-size:.8em}.prog .done{background:#2f7d5a}.prog .now{background:var(--acc);color:#000}
+.gear{display:inline-block;animation:spin 8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+table{border-collapse:collapse}td,th{border:1px solid #888;padding:3px 7px;text-align:center}.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9}.modal .card{max-width:800px;max-height:90vh;overflow:auto}
+.doc .small{color:#5a4a2a}.doc .big1{color:#8a3b00}body.hc .doc .small,body.hc .doc .big1{color:#ff0}.role{font-size:2em}.small{font-size:.85em;color:var(--mut)}.big1{font-size:1.6em;color:var(--acc);font-weight:800}
+@media (prefers-reduced-motion:reduce){.gear{animation:none}}
+</style></head><body>
+<header><span class="t"><span class="gear">⚙️</span> Operación Engranaje</span><span id="hinfo"></span><span id="timer" class="small"></span>
+<button id="bTimer" title="Cronómetro">⏱️ Crono</button><button id="bMute" aria-label="Silenciar sonido">🔊 Sonido</button><button id="bA11y">Aa Accesibilidad</button><button id="bTeacher">🔑 Docente</button></header>
+<main id="app"></main>
+<div class="modal" id="modal"><div class="card" id="modalc"></div></div>
+<script>
+/*DATA_START*/
+const DATA = {
+ teacherKey: "andoga6",
+ teams: ["LOBO","BUHO","ZORRO","LINCE","OSO"],
+ roles: {
+  A:{name:"Analista",ico:"🔎",skill:"Ordena pistas y descarta opciones"},
+  D:{name:"Documentalista",ico:"📚",skill:"Busca en webs, correos y archivos"},
+  C:{name:"Calculador/a",ico:"🧮",skill:"Hace y comprueba los cálculos"},
+  P:{name:"Portavoz",ico:"📣",skill:"Coordina, pregunta y escribe la respuesta"},
+  T:{name:"Técnico/a manitas",ico:"🛠️",skill:"Lidera el material impreso y la prueba visual"}
+ },
+ phases: [
+ {id:1,title:"Fase 1 · La taquilla de la estación",topic:"Criterios de divisibilidad",
+  story:"Medianoche en Vitoria-Gasteiz. El Reloj de los Engranajes de la Dra. Ximena Primo, que mantiene sincronizados todos los faros del Anillo Verde, se ha parado. Alguien ha robado su <b>corazón dorado</b>. Una cámara grabó al ladrón —que firma como <b>«El Divisor»</b>— dejando una bolsa en una taquilla de la estación. Hay 50 taquillas. ¿En cuál está?",
+  question:"¿Número de la taquilla?",type:"num",
+  answer:{normal:"105",apoyo:"105"},
+  params:{normal:{min:100,max:149},apoyo:{min:100,max:149}},
+  docs:{
+   A:"<div class='doc web'><h4>🌐 consignas-estacion-vitoria.eus</h4>Bienvenido al servicio de consignas. Nuestras taquillas están numeradas de la <b>100 a la 149</b>. ¡Gracias por viajar con nosotros!</div>",
+   D:"<div class='doc mail'><h4>✉️ De: elDivisor@anonimo.zz · Asunto: la bolsa</h4>Socio: la dejé en una taquilla cuyo número <b>se puede dividir entre 5</b> de forma exacta. No pierdas tiempo.</div>",
+   C:"<div class='doc'><h4>📄 Nota arrugada en una papelera</h4>«…y si <b>sumas sus cifras</b>, sale un <b>múltiplo de 3</b>. Así lo recordaré.»</div>",
+   P:"<div class='doc mail'><h4>✉️ Respuesta del socio</h4>Recibido. Te recuerdo que las taquillas con número <b>par</b> están averiadas. Así que la tuya es <b>impar</b>, ¿no?</div>",
+   T:"<div class='doc'><h4>🗂️ Informe del vigilante</h4>He revisado la cámara: al sumar las cifras de la taquilla <b>NO</b> sale un múltiplo de 9. Las demás pistas las tienen tus compañeros.</div>"},
+  hints:["Juntad las 5 pistas. Cada una elimina números. Empezad por los múltiplos de 5 entre 100 y 149.","Múltiplos de 5 e impares: terminan en 5. Quedan 105, 115, 125, 135, 145. Ahora sumad cifras.","Solo 105 y 135 tienen suma de cifras múltiplo de 3 (6 y 9). ¿Cuál NO tiene suma múltiplo de 9?"],
+  success:"¡Clic! Dentro de la taquilla 105 hay un sobre con cinco números y una tabla extraña…"},
+ {id:2,title:"Fase 2 · El mensaje cifrado en primos",topic:"Descomposición en factores primos",
+  story:"El sobre contiene un mensaje de El Divisor escrito con un cifrado que solo usa <b>números primos</b>. Cada miembro del equipo tiene un trozo. Descomponed cada número en factores primos, escribid los factores de <b>menor a mayor</b> y cambiadlos por letras. Uniendo los trozos en orden (1→5) sabréis dónde esconde el corazón del reloj.",
+  question:"¿Palabra secreta?",type:"word",
+  answer:{normal:"ENGRANAJES",apoyo:"ENGRANAJES"},
+  params:{key:{"2":"A","3":"E","5":"G","7":"N","11":"J","13":"R","17":"S","19":"I","23":"O","29":"T"},pieces:{A:[1,21],D:[2,65],C:[3,14],P:[4,22],T:[5,51]}},
+  docs:{
+   A:"<div class='doc'><h4>🔐 Trozo 1 y tabla de cifrado</h4>Trozo 1: <span class='big1'>21</span><table><tr><th>Primo</th><td>2</td><td>3</td><td>5</td><td>7</td><td>11</td><td>13</td><td>17</td><td>19</td><td>23</td><td>29</td></tr><tr><th>Letra</th><td>A</td><td>E</td><td>G</td><td>N</td><td>J</td><td>R</td><td>S</td><td>I</td><td>O</td><td>T</td></tr></table><p class='small'>¡Tú tienes la tabla! Dictádsela al resto.</p></div>",
+   D:"<div class='doc'><h4>🔐 Trozo 2</h4><span class='big1'>65</span><p class='small'>Archivo nº 2 de 5.</p></div>",
+   C:"<div class='doc'><h4>🔐 Trozo 3</h4><span class='big1'>14</span><p class='small'>Archivo nº 3 de 5.</p></div>",
+   P:"<div class='doc'><h4>🔐 Trozo 4</h4><span class='big1'>22</span><p class='small'>Archivo nº 4 de 5. Portavoz: apunta las letras en orden.</p></div>",
+   T:"<div class='doc'><h4>🔐 Trozo 5</h4><span class='big1'>51</span><p class='small'>Archivo nº 5 de 5. Pista: 51 no es primo… prueba a dividir entre 3.</p></div>"},
+  hints:["Descomponer = escribir el número como multiplicación de primos. Ej.: 15 = 3 × 5 → E G.","21 = 3 × 7 → E N. 65 = 5 × 13 → G R. Seguid con 14, 22 y 51.","14 = 2×7 (AN), 22 = 2×11 (AJ), 51 = 3×17 (ES). Unidlo todo: EN·GR·AN·AJ·ES."],
+  success:"«ENGRANAJES». El corazón está en el taller de engranajes del reloj… pero para entrar hay que descubrir el mensaje de la rejilla secreta."},
+ {id:3,label:"F3",title:"Fase 3 · La rejilla secreta (prueba impresa)",topic:"Lógica visual y cooperación",physical:true,
+  story:"En el taller hay una hoja llena de letras sin sentido: es una <b>rejilla de Cardano</b>, el truco de los espías del Renacimiento. El Divisor la dejó para su socio. La cuadrícula de letras la tiene el/la Técnico/a; cada uno de los otros cuatro agentes tiene una plantilla con ventanas. Solo colocando las cuatro plantillas, en el orden correcto, aparece el mensaje.",
+  question:"¿Qué mensaje aparece? (sin espacios)",type:"word",
+  answer:{normal:"ALMACENFAROS",apoyo:"ALMACENFAROS"},params:{rejilla:{"size": 6, "grid": "HGPIGAJTNGADRCFJYVQXXTOALPKCSEIMKDPZ", "holes": {"D": [10, 24, 31], "P": [5, 27, 29], "A": [8, 14, 23], "C": [12, 22, 28]}, "symbols": {"D": "☾", "P": "★", "A": "☀", "C": "⚙"}, "order": ["☾", "★", "☀", "⚙"], "answer": "ALMACENFAROS"}},
+  docs:{A:"<div class='doc'><h4>🧩 Tu pieza: la rejilla ☀</h4>Busca en el material impreso la <b>rejilla ☀</b>. Recorta sus <b>3 ventanas</b> sombreadas (dobla el papel por la ventana y corta). Ponla encima de la cuadrícula del Técnico/a, con los dos <b>triángulos ▲ en la misma esquina</b>, y lee las letras que se ven, de izquierda a derecha y de arriba abajo.</div>",D:"<div class='doc'><h4>🧩 Tu pieza: la rejilla ☾</h4>Busca en el material impreso la <b>rejilla ☾</b>. Recorta sus <b>3 ventanas</b> sombreadas (dobla el papel por la ventana y corta). Ponla encima de la cuadrícula del Técnico/a, con los dos <b>triángulos ▲ en la misma esquina</b>, y lee las letras que se ven, de izquierda a derecha y de arriba abajo.</div>",C:"<div class='doc'><h4>🧩 Tu pieza: la rejilla ⚙</h4>Busca en el material impreso la <b>rejilla ⚙</b>. Recorta sus <b>3 ventanas</b> sombreadas (dobla el papel por la ventana y corta). Ponla encima de la cuadrícula del Técnico/a, con los dos <b>triángulos ▲ en la misma esquina</b>, y lee las letras que se ven, de izquierda a derecha y de arriba abajo.</div>",P:"<div class='doc'><h4>🧩 Tu pieza: la rejilla ★</h4>Busca en el material impreso la <b>rejilla ★</b>. Recorta sus <b>3 ventanas</b> sombreadas (dobla el papel por la ventana y corta). Ponla encima de la cuadrícula del Técnico/a, con los dos <b>triángulos ▲ en la misma esquina</b>, y lee las letras que se ven, de izquierda a derecha y de arriba abajo.</div>",
+   T:"<div class='doc'><h4>🛠️ Tu pieza: la cuadrícula de letras</h4>Tienes la <b>cuadrícula 6 × 6</b> impresa con el triángulo ▲ en una esquina. Ponla en la mesa y dirige: cada compañero coloca su rejilla encima, alineando los ▲, y dicta sus 3 letras. Debajo de tu cuadrícula está el <b>orden de lectura</b> de las rejillas. El/la Portavoz apunta las letras.</div>"},
+  hints:["Alinead bien: el triángulo ▲ de la rejilla tiene que quedar encima del ▲ de la cuadrícula, sin girarla.","Cada rejilla da 3 letras. El orden de las rejillas está impreso debajo de la cuadrícula del Técnico/a: ☾ → ★ → ☀ → ⚙.","Las primeras rejillas dan A L M · A C E… Son dos palabras juntas: un edificio y lo que tiene la ciudad en el Anillo Verde."],
+  success:"«ALMACÉN FAROS». ¡Ya sabéis adónde se llevó El Divisor el corazón! Pero la trampilla del taller se ha cerrado tras vosotros…"},
+ {id:3.5,label:"F3b",title:"Fase 3b · Los engranajes de la trampilla",topic:"Mínimo común múltiplo (mcm)",
+  story:"Para salir del taller hay que mover dos engranajes encajados. Cada uno tiene un diente con una <b>marca roja</b> y ahora las dos marcas están juntas. La trampilla se abre cuando, girando, las dos marcas vuelvan a juntarse por primera vez. ¿Cuántos dientes tienen que pasar?",
+  question:"¿Cuántos dientes pasan hasta que las marcas vuelven a coincidir?",type:"num",
+  answer:{normal:"24",apoyo:"24"},params:{normal:[6,8],apoyo:[6,8]},
+  docs:{
+   A:"<div class='doc'><h4>⚙️ Engranaje pequeño</h4>Tiene <b>{0} dientes</b>. Su marca vuelve a su sitio cada {0} dientes.</div>",
+   D:"<div class='doc'><h4>📚 Manual del taller</h4>«Dos engranajes encajados avanzan el mismo número de dientes. Las marcas coinciden cuando ese número es <b>múltiplo de los dos</b>. La primera vez: el <b>mcm</b>.»</div>",
+   C:"<div class='doc'><h4>⚙️ Engranaje grande</h4>Tiene <b>{1} dientes</b>. Escribe sus múltiplos y compáralos con los del pequeño.</div>",
+   P:"<div class='doc'><h4>📣 Misión del portavoz</h4>Pide a cada compañero su dato. Comprobad el resultado de dos formas: con listas de múltiplos y con factores primos.</div>",
+   T:"<div class='doc'><h4>🛠️ Esquema</h4><svg viewBox='0 0 260 130' width='100%' style='max-width:380px' role='img' aria-label='Dos engranajes encajados, uno pequeño y uno grande, con una marca cada uno'><circle cx='80' cy='65' r='40' fill='#c9a24a' stroke='#5a4a2a' stroke-width='6' stroke-dasharray='10 10'/><circle cx='175' cy='65' r='52' fill='#9db4d8' stroke='#2a3a5a' stroke-width='6' stroke-dasharray='10 10'/><text x='80' y='70' text-anchor='middle' font-size='16'>pequeño</text><text x='175' y='70' text-anchor='middle' font-size='16'>grande</text><text x='118' y='60' font-size='18'>▼</text></svg><br>La marca ▼ está donde se tocan. Contad dientes, no vueltas.</div>"},
+  hints:["Si pasan 6 dientes, el pequeño da una vuelta; si pasan 8, el grande da una vuelta. ¿Cuándo dan vueltas completas los dos a la vez?","Múltiplos de 6: 6, 12, 18, 24… Múltiplos de 8: 8, 16, 24…","6 = 2·3 y 8 = 2³ → mcm = 2³·3 = 24 dientes (4 vueltas del pequeño y 3 del grande)."],
+  success:"¡Clac! Las marcas se juntan y la trampilla se abre…",
+  cliff:"…pero el taller está vacío. Solo hay una nota con letra torcida: <i>«Llegáis tarde, agentes. Ya estoy en el almacén de los faros. Esta noche, cuando los tres faros brillen a la vez, desapareceré para siempre. — El Divisor»</i><br><br>🌙 <b>FIN DE LA SESIÓN 1.</b> Guardad el secreto… ¡y volved preparados!",
+  extra:"🚀 Modo reto: ¿cuántas vueltas habrá dado cada engranaje? ¿Y si hubiera un tercero de 10 dientes?"},
+ {id:4,title:"Fase 4 · La base de datos del almacén",topic:"Máximo común divisor (mcd)",
+  story:"Para cruzar el Anillo Verde de noche hacen falta kits de rescate. El almacén tiene linternas, cuerdas y brújulas. Hay que preparar el <b>mayor número posible de kits iguales</b>, sin que sobre nada. Cada agente tiene acceso a una tabla distinta de la base de datos.",
+  question:"¿Cuántos kits iguales como máximo?",type:"num",
+  answer:{normal:"42",apoyo:"6"},params:{normal:[84,126,210],apoyo:[12,18,30]},
+  docs:{
+   A:"<div class='doc db'><h4>🗄️ SELECT * FROM linternas;</h4>cantidad = <b>{0}</b></div>",
+   D:"<div class='doc db'><h4>🗄️ SELECT * FROM cuerdas;</h4>cantidad = <b>{1}</b></div>",
+   C:"<div class='doc db'><h4>🗄️ SELECT * FROM brujulas;</h4>cantidad = <b>{2}</b></div>",
+   P:"<div class='doc mail'><h4>✉️ De: Dra. Ximena Primo</h4>Agentes: todos los kits deben ser <b>idénticos</b> y no puede <b>sobrar</b> nada. Necesitamos <b>el máximo número</b> de kits. Pedid los datos a vuestro equipo.</div>",
+   T:"<div class='doc'><h4>🛠️ Ficha de método</h4>El número de kits debe <b>dividir</b> exactamente a las tres cantidades. Buscad el <b>divisor común más grande</b>: descomponed en factores primos y quedaos con los factores <b>comunes</b> con el <b>menor</b> exponente.</div>"},
+  hints:["El número de kits tiene que ser divisor de las tres cantidades a la vez.","Descomponed las tres cantidades en factores primos y buscad qué factores aparecen en las tres.","Normal: 84=2²·3·7, 126=2·3²·7, 210=2·3·5·7 → mcd=2·3·7. Apoyo: 12=2²·3, 18=2·3², 30=2·3·5 → mcd=2·3."],
+  success:"¡Kits listos! Cada agente coge el suyo. Desde lo alto se ven tres faros parpadeando…"},
+ {id:4.5,label:"F4b",title:"Fase 4b · La discoteca de El Divisor (minijuego de ritmo)",topic:"Múltiplos comunes y mcm · ¡a ritmo!",mini:true,
+  story:"Sorpresa: el almacén tiene una puerta secreta… ¡a una <b>discoteca</b> escondida bajo el faro! 🪩 El Divisor está en la pista intentando bailar, pero es un desastre: <i>«¡Yo divido la pista y nadie quiere bailar conmigo!»</i>. La puerta de salida solo se abre si el equipo sigue el ritmo: hay una <b>luz roja ●</b> y una <b>luz azul ■</b> que se encienden cada cierto número de golpes. ¡Dad palmadas todos juntos, pulsad en vuestro momento y averiguad cada cuántos golpes se encienden las dos a la vez!",
+  question:"¿Cada cuántos golpes se encienden las dos luces a la vez?",type:"num",
+  answer:{normal:"12",apoyo:"6"},params:{normal:[3,4],apoyo:[2,3]},speed:{normal:650,apoyo:950},
+  docs:{
+   A:"<div class='doc'><h4>● Eres la LUZ ROJA</h4>La luz roja se enciende cada <b>{0} golpes</b>. Tu tarea: dar una <b>palmada</b> y pulsar «¡AHORA!» cada vez que se enciende la luz roja.</div>",
+   D:"<div class='doc'><h4>📚 Normas de la discoteca</h4>«La puerta se abre cuando el equipo pulsa <b>justo cuando se encienden las dos luces a la vez</b>.» Tu tarea: pulsar «¡AHORA!» solo en esos golpes dobles y gritar <b>«¡FARO!»</b>.</div>",
+   C:"<div class='doc'><h4>■ Eres la LUZ AZUL</h4>La luz azul se enciende cada <b>{1} golpes</b>. Tu tarea: dar un <b>golpe en la mesa</b> y pulsar «¡AHORA!» cada vez que se enciende la luz azul.</div>",
+   P:"<div class='doc'><h4>📣 DJ del equipo</h4>Tú <b>cuentas los golpes en voz alta</b> (1, 2, 3…) y apuntas en qué golpes coinciden las dos luces. Pulsa «¡AHORA!» en los golpes dobles.</div>",
+   T:"<div class='doc'><h4>🛠️ Técnico/a de luces</h4>En los golpes en que se encienden las dos luces, haz un <b>pisotón</b> (¡o un paso de baile!) y pulsa «¡AHORA!». Ayuda al DJ a comprobar el patrón.</div>"},
+  hints:["Fijaos en qué golpes se enciende cada luz. Apuntadlos en dos listas.","Normal: roja en 3, 6, 9, 12… azul en 4, 8, 12… Apoyo: roja en 2, 4, 6… azul en 3, 6…","Es el mcm: normal mcm(3,4)=12; apoyo mcm(2,3)=6."],
+  success:"🪩 ¡La pista explota de luz! El Divisor resbala con su propia bola de discoteca y confiesa: <i>«Vale, vale… robé el corazón porque NUNCA me invitan a la fiesta de los múltiplos comunes»</i>. Y, ¡zas!, se escapa entre la gente… a una fiesta de disfraces.",
+  extra:"🚀 Modo reto: si hubiera una tercera luz verde ▲ cada 5 golpes, ¿en qué golpe se encenderían las tres a la vez? (Respuesta: mcm(3,4,5) = 60)"},
+ {id:4.7,label:"F4c",title:"Fase 4c · La fiesta de disfraces (lógica y observación)",topic:"Lógica deductiva · sin números",lineup:true,
+  story:"El Divisor se ha colado en la fiesta de disfraces del faro. Hay <b>6 invitados sospechosos</b> y solo uno es él. Cada agente ha hablado con un testigo distinto. Juntad los cinco testimonios y descubrid quién es. ¡Ojo: cada testimonio descarta a alguien!",
+  question:"¿Quién es El Divisor? (escribe el nombre de su cartel)",type:"word",
+  answer:{normal:"BIGOTON",apoyo:"BIGOTON"},
+  params:{suspects:[
+   {name:"CHISTERA",sombrero:true,gafas:true,bigote:false,bufanda:true,paraguas:false},
+   {name:"PARAGUAS",sombrero:false,gafas:true,bigote:true,bufanda:true,paraguas:true},
+   {name:"BIGOTON",sombrero:false,gafas:true,bigote:true,bufanda:true,paraguas:false},
+   {name:"FRIOLERO",sombrero:false,gafas:true,bigote:true,bufanda:false,paraguas:false},
+   {name:"MISTERIO",sombrero:false,gafas:true,bigote:false,bufanda:true,paraguas:false},
+   {name:"PEPIN",sombrero:false,gafas:false,bigote:true,bufanda:true,paraguas:false}]},
+  docs:{
+   A:"<div class='doc mail'><h4>🗣️ Testigo: la camarera</h4>«Le vi leer la carta de cerca: <b>llevaba gafas</b>, seguro.»</div>",
+   D:"<div class='doc mail'><h4>🗣️ Testigo: el guardarropa</h4>«Dejó su abrigo, pero <b>no traía paraguas</b>. ¡Le recuerdo porque se quejó del viento!»</div>",
+   C:"<div class='doc mail'><h4>🗣️ Testigo: el fotógrafo</h4>«En la foto se le ve <b>bigote o sombrero, pero no las dos cosas</b>… ¡ni ninguna! Una de las dos, solo una.»</div>",
+   P:"<div class='doc mail'><h4>🗣️ Testigo: el DJ</h4>«Bailaba fatal y se le movía <b>la bufanda</b> por todas partes. Llevaba bufanda, sí.»</div>",
+   T:"<div class='doc mail'><h4>🗣️ Testigo: la de seguridad</h4>«Me fijé en una cosa: <b>quien llevaba gafas no llevaba sombrero</b>. Es lo que me dijo él al entrar: “las gafas y el sombrero me dan calor”.»</div>"},
+  hints:["Id descartando: leed un testimonio y tachad a quien no cumple. Así, uno por uno.","Las gafas descartan a PEPIN; el paraguas a PARAGUAS; la bufanda a FRIOLERO.","Quedan CHISTERA, BIGOTON y MISTERIO. «Bigote o sombrero, solo uno» elimina a MISTERIO; «con gafas, sin sombrero» elimina a CHISTERA."],
+  success:"🎭 ¡Le quitáis el bigote postizo… y debajo hay OTRO bigote! Es El Divisor. Pero mientras discutís, os enseña un mapa: <i>«Me voy cuando los tres faros brillen a la vez. ¡Adiós, agentes!»</i> y sale corriendo hacia el Anillo Verde."},
+ {id:5,title:"Fase 5 · Los tres faros",topic:"mcm aplicado a tiempos",
+  story:"El Divisor escapará cuando los tres faros del Anillo Verde brillen <b>a la vez</b>. Hay que llegar antes. Esta noche brillaron juntos exactamente a las <b>21:00:00</b>. ¿A qué hora volverán a coincidir?",
+  question:"¿Hora de la próxima coincidencia? (hh:mm)",type:"time",
+  answer:{normal:"21:03",apoyo:"21:01"},params:{normal:[12,18,30],apoyo:[4,6,10],start:"21:00"},
+  docs:{
+   A:"<div class='doc'><h4>🗼 Faro de Olárizu</h4>Destella cada <b>{0} segundos</b>.</div>",
+   D:"<div class='doc web'><h4>🌐 Web del Anillo Verde · Faro de Salburua</h4>Nuestro faro destella cada <b>{1} segundos</b>.</div>",
+   C:"<div class='doc mail'><h4>✉️ Mantenimiento · Faro de Zabalgana</h4>Ajustado: destello cada <b>{2} segundos</b>.</div>",
+   P:"<div class='doc'><h4>📣 Recuerda</h4>60 segundos = 1 minuto. Expresad la respuesta como hora (por ejemplo, 21:07).</div>",
+   T:"<div class='doc'><h4>🗺️ Mapa</h4><svg viewBox='0 0 300 150' width='100%' style='max-width:420px' role='img' aria-label='Mapa con los tres faros alrededor de la ciudad'><rect width='300' height='150' fill='#cfe8c8'/><circle cx='150' cy='75' r='55' fill='none' stroke='#2a7d3a' stroke-width='8' stroke-dasharray='4 4'/><text x='150' y='80' text-anchor='middle' font-size='14'>🏙️ Gasteiz</text><text x='70' y='40' font-size='20'>🗼</text><text x='210' y='40' font-size='20'>🗼</text><text x='140' y='145' font-size='20'>🗼</text></svg><br>Tres faros = tres números. El tiempo de coincidencia es el <b>mcm</b> de los tres.</div>"},
+  hints:["Buscad el primer número de segundos que sea múltiplo de los tres a la vez.","Descomponed: normal 12=2²·3, 18=2·3², 30=2·3·5. Apoyo 4=2², 6=2·3, 10=2·5. Factores comunes y no comunes con el mayor exponente.","Normal: mcm=180 s = 3 min. Apoyo: mcm=60 s = 1 min. Sumadlo a las 21:00."],
+  success:"¡Llegáis a tiempo! El Divisor está atrapado junto a una caja fuerte con 5 ruedas… El corazón dorado está dentro."},
+ {id:6,title:"Final · La caja fuerte de 5 cifras",topic:"Repaso y cooperación",
+  story:"La caja fuerte tiene <b>5 cifras</b>. Cada agente ve en su pantalla la regla de UNA cifra. Solo juntando las cinco, en orden (Analista, Documentalista, Calculador/a, Portavoz, Técnico/a), se abre.",
+  question:"Código de la caja fuerte (5 cifras)",type:"num",
+  answer:{normal:"54337",apoyo:"54217"},
+  docs:{
+   A:"<div class='doc'><h4>1ª cifra</h4>La <b>última cifra</b> del número de la taquilla de la Fase 1.</div>",
+   D:"<div class='doc'><h4>2ª cifra</h4>La <b>cifra de las unidades</b> del número de dientes de la Fase 3b (engranajes).</div>",
+   C:"<div class='doc'><h4>3ª cifra</h4>¿Cuántos <b>factores primos distintos</b> tiene la cantidad de linternas de la Fase 4 ({0})?</div>",
+   P:"<div class='doc'><h4>4ª cifra</h4>¿Cuántos <b>minutos</b> pasaron entre las 21:00 y la coincidencia de los faros?</div>",
+   T:"<div class='doc'><h4>5ª cifra</h4>¿Cuántas <b>letras distintas</b> tiene la palabra secreta de la Fase 2?</div>"},
+  params:{normal:{lint:84},apoyo:{lint:12}},
+  hints:["Cada cifra sale de una respuesta anterior. Repasad lo que habéis resuelto.","Taquilla 105, dientes de los engranajes 24, minutos de los faros… y contad letras distintas de ENGRANAJES sin repetir.","Normal: 5·4·3·3·7. Apoyo: 5·4·2·1·7."],
+  success:"🏆 ¡La caja se abre! El corazón dorado vuelve al reloj, los engranajes giran y los faros de Vitoria-Gasteiz vuelven a latir sincronizados. ¡Misión cumplida, agentes!"}
+ ],
+ challenge:{question:"RETO EXTRA: un cuarto faro destella cada 40 s. Si los cuatro (12, 18, 30 y 40 s) coinciden a las 21:00:00, ¿cuántos segundos pasan hasta que vuelvan a coincidir los cuatro?",type:"num",answer:"360",
+  hints:["mcm de 180 (los tres primeros) y 40.","180=2²·3²·5, 40=2³·5.","2³·3²·5 = 360."]}
+};
+/*DATA_END*/
+const ROLES=Object.keys(DATA.roles);const PREFIX="mision-engranaje:";
+function norm(s,type){s=String(s||"").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"");
+ if(type==="num"){s=s.replace(/[.,·-]/g,"");return /^\d+$/.test(s)?String(parseInt(s,10)):s}
+ if(type==="time"){const m=s.match(/^(\d{1,2})[:.,H']?(\d{2})(?:[:.,]?00)?$/);return m?String(+m[1]).padStart(2,"0")+":"+m[2]:s}
+ return s.replace(/[^A-ZÑ]/g,"")}
+window.__norm=norm;
+let S=null,muted=localStorage.getItem(PREFIX+"muted")==="1",timerOn=false,actx=null;
+function save(){if(S)localStorage.setItem(PREFIX+S.team+"-"+S.role,JSON.stringify(S));localStorage.setItem(PREFIX+"last",S?S.team+"-"+S.role:"")}
+function tone(f,d,t){if(muted)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.setValueAtTime(.15,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+const sfx={ok(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.25),i*110))},bad(){tone(160,.35,"sawtooth")},click(){tone(880,.06,"square")},hint(){tone(440,.2,"triangle")}};
+function $(id){return document.getElementById(id)}
+function fill(html,p){return html.replace(/\{(\w+)\}/g,(m,k)=>p&&p[k]!==undefined?p[k]:m)}
+function a11y(){const a=JSON.parse(localStorage.getItem(PREFIX+"a11y")||"{}");document.body.classList.toggle("big",!!a.big);document.body.classList.toggle("hc",!!a.hc);document.body.classList.toggle("dys",!!a.dys);return a}
+function hdr(){$("bMute").textContent=muted?"🔇 Silencio":"🔊 Sonido";$("hinfo").textContent=S?`${S.team} · ${DATA.roles[S.role].ico} ${DATA.roles[S.role].name} · ${S.mode==="apoyo"?"Modo apoyo":"Modo normal"} · ⭐ ${S.points}`:""}
+function login(){S=null;hdr();const last=localStorage.getItem(PREFIX+"last")||"";
+ $("app").innerHTML=`<div class="card"><h1><span class="gear">⚙️</span> Operación Engranaje</h1><p>Agencia de Investigación Matemática · Vitoria-Gasteiz. Escribe el <b>código de tu carnet</b> (equipo + rol, por ejemplo <b>LOBO-A</b>). No escribas tu nombre: solo el código.</p>
+ <label for="code">Código de agente</label><br><input id="code" value="${last}" placeholder="LOBO-A" autocomplete="off"><br><br>
+ <label for="mode">Modo de juego (lo decide el equipo con el/la docente; todo el equipo igual)</label><br><select id="mode"><option value="normal">Normal</option><option value="apoyo">Apoyo (números más pequeños, tablas y pistas sin coste)</option></select><br><br>
+ <button class="main" id="go">Entrar en la misión ▶</button><p class="msg badm" id="lmsg"></p>
+ <p class="small">Equipos: ${DATA.teams.join(", ")} · Roles: ${ROLES.map(r=>r+" = "+DATA.roles[r].name).join(", ")}</p></div>`;
+ $("go").onclick=()=>{const c=$("code").value.trim().toUpperCase().replace(/\s/g,"");const m=c.match(/^([A-ZÑ]+)-?([ADCPT])$/);
+  if(!m||!DATA.teams.includes(m[1])){$("lmsg").textContent="Código no válido. Mira tu carnet (ej.: LOBO-A).";sfx.bad();return}
+  const k=PREFIX+m[1]+"-"+m[2];S=JSON.parse(localStorage.getItem(k)||"null")||{team:m[1],role:m[2],mode:$("mode").value,phase:0,points:1000,hints:{},times:{},sessionStart:Date.now(),fails:{}};
+  save();sfx.click();render()};$("code").onkeydown=e=>{if(e.key==="Enter")$("go").click()}}
+function tools(){return `<details class="card"><summary>🧰 Tablas de ayuda (primos y multiplicar)</summary><p><b>Primos hasta 100:</b> ${[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97].join(", ")}</p><table>${[...Array(10)].map((_,i)=>"<tr>"+[...Array(10)].map((_,j)=>`<td>${(i+1)*(j+1)}</td>`).join("")+"</tr>").join("")}</table><p class="small">Criterios: 2 → termina en par · 3 → suma de cifras múltiplo de 3 · 5 → termina en 0 o 5 · 9 → suma de cifras múltiplo de 9 · 10 → termina en 0</p></details>`}
+function prog(){return `<div class="prog" aria-label="Progreso">${DATA.phases.map((p,i)=>`<span class="${i<S.phase?"done":i===S.phase?"now":""}">${i<S.phase?"✔ ":""}${p.label||(p.id<6?"F"+p.id:"Final")}</span>`).join("")}</div>`}
+function render(){hdr();clearInterval(miniT);const r=DATA.roles[S.role];
+ if(S.phase===4&&!S.s2){return cliff()}
+ if(S.phase>=DATA.phases.length)return finale();
+ const P=DATA.phases[S.phase],par=Array.isArray(P.params&&P.params[S.mode])?P.params[S.mode]:(P.id===6?[P.params[S.mode].lint]:null);
+ const hl=S.hints[P.id]||0;
+ $("app").innerHTML=`${prog()}<div class="card"><p class="small">${P.topic}</p><h2>${P.title}${P.physical?" ✂️":""}</h2><p>${P.story}</p>${P.extra?`<p class="small">${P.extra}</p>`:""}</div>
+ <div class="card"><p><span class="role">${r.ico}</span> <b>Tu documento como ${r.name}</b> <span class="small">(${r.skill}) — tus compañeros ven OTROS documentos: ¡compartid en voz alta!</span></p>${fill(P.docs[S.role],par)}</div>
+ ${P.mini?`<div class="card" id="minic"></div>`:""}${P.lineup?`<div class="card" id="linec"></div>`:""}<div class="card"><label for="ans"><b>${P.question}</b></label><div class="row"><input id="ans" autocomplete="off"><button class="main" id="send">Comprobar</button></div><p class="msg" id="amsg" role="status" aria-live="polite"></p>
+ <p class="small">Cuando el equipo lo resuelva, cada agente escribe la respuesta en su Chromebook para avanzar.</p>
+ <div id="hints">${P.hints.slice(0,hl).map((h,i)=>`<div class="hint">💡 Pista ${i+1}${i===2?" (casi solución)":i===1?" (pista fuerte)":" (orientación)"}: ${h}</div>`).join("")}</div>
+ ${hl<3?`<button id="bh">💡 Pedir pista ${hl+1} de 3 ${S.mode==="apoyo"?"(gratis)":"(−"+(hl+1)*10+" ⭐)"}</button>`:""}</div>${S.mode==="apoyo"?tools():`<details class="card"><summary>🧰 ¿Necesitáis tablas?</summary>${tools()}</details>`}`;
+ if(P.lineup)lineup(P);if(P.mini)mini(P);
+ $("send").onclick=()=>check(P);$("ans").onkeydown=e=>{if(e.key==="Enter")check(P)};
+ if($("bh"))$("bh").onclick=()=>{S.hints[P.id]=hl+1;if(S.mode!=="apoyo")S.points=Math.max(0,S.points-(hl+1)*10);save();sfx.hint();render()};$("ans").focus()}
+let miniT=null;
+const FUN=["¡Uy! El Divisor se ríe… ¡pero no pasa nada, seguid!","¡Fuera de ritmo! Hasta El Divisor baila mejor… (¡mentira!)","Casi… ¡escuchad al DJ!","¡Ese no era! Pero los fallos no restan nada."];
+function mini(P){clearInterval(miniT);const [a,b]=P.params[S.mode];const ms=localStorage.getItem(PREFIX+"fast")?90:P.speed[S.mode];
+ const tgt=n=>S.role==="A"?n%a===0:S.role==="C"?n%b===0:(n%a===0&&n%b===0);const need=S.role==="A"||S.role==="C"?4:2;
+ S.mini=S.mini||{};const st={n:0,t:0,tapped:false,hits:(S.mini[P.id]||0),missed:0,running:false};window.__mini={st,tgt:()=>st.n>0&&tgt(st.n)&&!st.tapped,done:()=>st.hits>=need};
+ const done=()=>st.hits>=need;
+ const draw=()=>{const n=st.n,ra=n>0&&n%a===0,bl=n>0&&n%b===0,assist=st.missed>=3&&tgt(n)&&!st.tapped;
+  $("minic").innerHTML=`<h3>🪩 Minijuego: ¡a ritmo!</h3><p class="small">Tu objetivo: ${S.role==="A"?"pulsar cuando se enciende la luz roja ●":S.role==="C"?"pulsar cuando se enciende la luz azul ■":"pulsar cuando se encienden las DOS luces a la vez"} (${need} aciertos). Los fallos no restan puntos.</p>
+  <div class="row" style="justify-content:center;gap:30px"><svg width="90" height="90" role="img" aria-label="Luz roja ${ra?"encendida":"apagada"}"><circle cx="45" cy="45" r="38" fill="${ra?"#ff3b3b":"#3a1515"}" stroke="#fff" stroke-width="3"/><text x="45" y="52" text-anchor="middle" font-size="22" fill="#fff">${ra?"●":""}</text></svg>
+  <div style="text-align:center"><div class="big1" aria-live="off">Golpe ${n}</div><div>${ra&&bl?"🔊 ¡¡FARO!!":ra?"👏":bl?"✊":"·"}</div></div>
+  <svg width="90" height="90" role="img" aria-label="Luz azul ${bl?"encendida":"apagada"}"><rect x="7" y="7" width="76" height="76" fill="${bl?"#3b8bff":"#15203a"}" stroke="#fff" stroke-width="3"/><text x="45" y="52" text-anchor="middle" font-size="22" fill="#fff">${bl?"■":""}</text></svg></div>
+  <p style="text-align:center">${done()?`<b class="okm">✅ ¡Superado! Ya podéis responder la pregunta.</b>`:`<button class="main" id="tap" style="font-size:1.4em;padding:14px 34px;${assist?"outline:6px solid #5fe0a0":""}">${assist?"👉 ¡YA! 👈":"¡AHORA!"}</button><br>`}
+  ${st.running||done()?"":`<button id="play">▶ Empezar la música</button>`} <span>Aciertos: ${"⭐".repeat(Math.min(st.hits,need))}${"☆".repeat(Math.max(0,need-st.hits))}</span></p><p class="msg" id="mmsg" style="text-align:center">${st.msg||""}</p>
+  ${st.missed>=3&&!done()?`<p class="small" style="text-align:center">💡 Modo ayuda activado: el botón se ilumina en vuestro momento.</p>`:""}`;
+  if($("tap"))$("tap").onclick=tap;if($("play"))$("play").onclick=start;lock()};
+ const lock=()=>{const i=$("ans"),bt=$("send");if(i){i.disabled=!done();bt.disabled=!done();i.placeholder=done()?"":"Primero superad el minijuego"}};
+ const beat=()=>{if(st.n>0&&tgt(st.n)&&!st.tapped)st.missed++;st.n++;st.tapped=false;st.t=Date.now();const n=st.n;if(n%a===0&&n%b===0){tone(392,.25,"square");tone(523,.25,"square");tone(659,.3)}else if(n%a===0)tone(220,.12,"square");else if(n%b===0)tone(330,.12,"triangle");else tone(110,.05);if(n>=120){st.n=0}draw()};
+ const start=()=>{st.running=true;st.msg="";clearInterval(miniT);miniT=setInterval(()=>{if(!document.getElementById("minic")||done()){clearInterval(miniT);return}beat()},ms);draw()};
+ const tap=()=>{if(st.n>0&&tgt(st.n)&&!st.tapped&&Date.now()-st.t<ms*0.95){st.tapped=true;st.hits++;st.missed=0;st.msg="🎉 ¡Clavado!";S.mini[P.id]=st.hits;save();tone(880,.1);if(done()){clearInterval(miniT);sfx.ok()}}else{st.msg=FUN[Math.floor(Math.random()*FUN.length)];tone(140,.15,"sawtooth")}draw()};
+ window.__mini.tap=tap;window.__mini.start=start;draw()}
+function lineup(P){const L=P.params.suspects,ic={sombrero:"🎩",gafas:"👓",bigote:"🥸",bufanda:"🧣",paraguas:"☂️"};
+ $("linec").innerHTML=`<h3>🎭 Los 6 sospechosos (todos los agentes los ven)</h3><div class="row" style="align-items:stretch">${L.map(x=>`<div class="doc" style="flex:1;min-width:140px;text-align:center"><div style="font-size:2em">🕺</div><b>${x.name}</b><div style="font-size:1.3em">${Object.keys(ic).filter(k=>x[k]).map(k=>ic[k]).join(" ")}</div><div class="small">${Object.keys(ic).map(k=>(x[k]?"✔ ":"✘ ")+k).join("<br>")}</div><label class="small"><input type="checkbox" style="width:auto" aria-label="Descartar ${x.name}"> descartado</label></div>`).join("")}</div>`}
+function check(P){const v=norm($("ans").value,P.type),a=norm(P.answer[S.mode],P.type);
+ if(v&&v===a){sfx.ok();S.times[P.id]=Date.now();S.phase++;save();showOk(P)}else{sfx.bad();S.fails[P.id]=(S.fails[P.id]||0)+1;save();$("amsg").className="msg badm";$("amsg").textContent="❌ No es correcto. Revisad juntos las pistas de todos los documentos."+(S.fails[P.id]>=3?" ¿Probáis a pedir una pista?":"")}}
+function showOk(P){$("app").innerHTML=`${prog()}<div class="card"><h2>✅ ¡Correcto!</h2><p>${P.success}</p><button class="main" id="next">Continuar ▶</button></div>`;$("next").onclick=render;$("next").focus()}
+function cliff(){$("app").innerHTML=`${prog()}<div class="card"><h2>📜 Una nota en el taller…</h2><p>${DATA.phases[3].cliff}</p><p class="small">Vuestro progreso queda guardado en este Chromebook. En la sesión 2 entrad con el mismo código.</p><button class="main" id="s2">▶ Empezar la sesión 2</button></div>`;$("s2").onclick=()=>{S.s2=true;S.session2Start=Date.now();save();sfx.click();render()}}
+function finale(){const t=S.times[6]&&S.sessionStart?Math.round((S.times[6]-S.sessionStart)/60000):"?";const hs=Object.values(S.hints).reduce((a,b)=>a+b,0);
+ $("app").innerHTML=`${prog()}<div class="card" style="text-align:center"><h1>🏆 ¡Misión cumplida!</h1><p>${DATA.phases[8].success}</p><p class="big1">${S.team} · ⭐ ${S.points} puntos</p><p>Pistas usadas: ${hs}</p>
+ <h3>🗣️ Puesta en común</h3><ol style="text-align:left"><li>¿Qué fase usó el mcm y cuál el mcd? ¿Cómo lo supisteis?</li><li>¿Qué aportó cada rol? ¿Alguien podría haberlo resuelto solo?</li><li>¿Qué error cometisteis y cómo lo arreglasteis?</li><li>Inventad una situación de vuestra vida donde haga falta el mcm.</li></ol></div>
+ <div class="card"><h3>🚀 Modo reto</h3><p>${DATA.challenge.question}</p>${S.chDone?`<p class="okm">✅ ¡Reto superado! 360 s = 6 minutos.</p>`:`<div class="row"><input id="ans"><button class="main" id="send">Comprobar</button></div><p class="msg" id="amsg"></p>${(S.chH||0)<3?`<button id="bh">💡 Pista</button>`:""}`}<div>${DATA.challenge.hints.slice(0,S.chH||0).map(h=>`<div class="hint">💡 ${h}</div>`).join("")}</div></div>`;
+ if(!S.chDone){$("send").onclick=()=>{if(norm($("ans").value,"num")===DATA.challenge.answer){S.chDone=true;S.points+=50;save();sfx.ok();render()}else{sfx.bad();$("amsg").className="msg badm";$("amsg").textContent="❌ Todavía no."}};if($("bh"))$("bh").onclick=()=>{S.chH=(S.chH||0)+1;save();render()}}}
+function modal(h){$("modalc").innerHTML=h+`<p><button id="mclose">Cerrar</button></p>`;$("modal").style.display="flex";$("mclose").onclick=()=>$("modal").style.display="none"}
+function askKey(cb){modal(`<h2>🔑 Clave docente</h2><input id="tk" type="password" aria-label="Clave docente"> <button class="main" id="tko">Entrar</button><p id="tkm" class="badm"></p>`);$("tk").focus();const f=()=>{if($("tk").value===DATA.teacherKey)cb();else $("tkm").textContent="Clave incorrecta"};$("tko").onclick=f;$("tk").onkeydown=e=>{if(e.key==="Enter")f()}}
+function teacher(){askKey(()=>{const mode=S?S.mode:"normal";modal(`<h2>🔑 Modo docente</h2><p>Soluciones (${mode}):</p><ol>${DATA.phases.map(p=>`<li>${p.title}: <b>${p.answer[mode]}</b></li>`).join("")}<li>Reto: <b>${DATA.challenge.answer}</b></li></ol>
+ ${S?`<p><button id="tskip">⏭️ Saltar fase actual</button> <button id="tback">⏮️ Retroceder fase</button> <button id="tmode">Cambiar a modo ${mode==="apoyo"?"normal":"apoyo"}</button> <button id="tout">🚪 Cambiar de agente</button></p><p><button id="treset">♻️ Reiniciar este agente</button></p>`:""}<p><button id="tall" style="background:#a33">🗑️ Borrar TODO el progreso de este Chromebook</button></p>`);
+ if(S){$("tskip").onclick=()=>{if(S.phase===4&&!S.s2)S.s2=true;else S.phase=Math.min(S.phase+1,DATA.phases.length);save();$("modal").style.display="none";render()};$("tback").onclick=()=>{S.phase=Math.max(0,S.phase-1);save();$("modal").style.display="none";render()};
+ $("tmode").onclick=()=>{S.mode=mode==="apoyo"?"normal":"apoyo";save();$("modal").style.display="none";render()};$("tout").onclick=()=>{$("modal").style.display="none";login()};
+ $("treset").onclick=()=>{localStorage.removeItem(PREFIX+S.team+"-"+S.role);$("modal").style.display="none";login()}}
+ $("tall").onclick=()=>{Object.keys(localStorage).filter(k=>k.startsWith(PREFIX)).forEach(k=>localStorage.removeItem(k));$("modal").style.display="none";login()}})}
+$("bMute").onclick=()=>{muted=!muted;localStorage.setItem(PREFIX+"muted",muted?"1":"0");hdr()};
+$("bTeacher").onclick=teacher;
+$("bA11y").onclick=()=>{const a=a11y();modal(`<h2>Aa Accesibilidad</h2><p><label><input type="checkbox" id="xbig" ${a.big?"checked":""} style="width:auto"> Letra grande</label></p><p><label><input type="checkbox" id="xhc" ${a.hc?"checked":""} style="width:auto"> Alto contraste</label></p><p><label><input type="checkbox" id="xdys" ${a.dys?"checked":""} style="width:auto"> Fuente para dislexia / más espaciado</label></p>`);["big","hc","dys"].forEach(k=>$("x"+k).onchange=e=>{a[k]=e.target.checked;localStorage.setItem(PREFIX+"a11y",JSON.stringify(a));a11y()})};
+$("bTimer").onclick=()=>{timerOn=!timerOn;if(!timerOn)$("timer").textContent=""};
+setInterval(()=>{if(timerOn&&S){const st=S.s2?S.session2Start:S.sessionStart;const s=Math.floor((Date.now()-st)/1000);$("timer").textContent=`⏱️ ${Math.floor(s/60)}:${String(s%60).padStart(2,"0")} / 60:00`}},1000);
+a11y();login();
+</script></body></html>
